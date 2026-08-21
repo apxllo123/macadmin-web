@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="A responsible proposal for administrator access on a personally purchased Mac used for software development.">
+<title>Mac Administrator Access — A Responsible Proposal</title>
+<style>
+:root{--bg:#f5f7fb;--card:#fff;--text:#18202a;--muted:#5d6875;--line:#dfe4ea;--accent:#2563eb;--soft:#eef4ff;--green:#166534;--greenbg:#effaf2}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);color:var(--text);font:16px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif}main{max-width:980px;margin:0 auto;padding:32px 20px 60px}.hero,.card{background:var(--card);border:1px solid var(--line);border-radius:20px;box-shadow:0 8px 28px rgba(15,23,42,.06)}.hero{padding:42px;margin-bottom:18px;background:linear-gradient(180deg,#fff,#f8fbff)}h1{font-size:clamp(32px,6vw,54px);line-height:1.05;letter-spacing:-.03em;margin:0 0 16px}h2{font-size:25px;line-height:1.2;margin:0 0 14px}h3{font-size:18px;margin:20px 0 8px}.subtitle{font-size:19px;color:var(--muted);max-width:760px}.tag{display:inline-block;padding:6px 10px;border-radius:999px;background:var(--soft);color:var(--accent);font-weight:700;font-size:13px;margin-bottom:16px}.card{padding:28px;margin-bottom:18px}.callout{border-left:5px solid var(--accent);background:var(--soft);padding:16px 18px;border-radius:10px;margin:18px 0}.success{border-left-color:#22c55e;background:var(--greenbg);color:var(--green)}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}.mini{border:1px solid var(--line);border-radius:14px;padding:18px;background:#fff}.mini h3{margin-top:0}li{margin:9px 0}.check{list-style:none;padding-left:0}.check li{padding-left:30px;position:relative}.check li:before{content:'✓';position:absolute;left:0;top:0;color:#15803d;font-weight:800}.sources{font-size:14px;color:var(--muted);border-top:1px solid var(--line);padding-top:14px;margin-top:18px}.sources a{color:var(--accent)}.quote{font-size:20px;font-weight:650;line-height:1.45}.num{display:inline-grid;place-items:center;width:30px;height:30px;border-radius:50%;background:var(--accent);color:white;font-weight:800;margin-right:8px}.footer{text-align:center;color:var(--muted);font-size:13px;padding-top:12px}a{color:var(--accent)}@media(max-width:700px){.grid{grid-template-columns:1fr}.hero,.card{padding:22px}}
+</style>
+</head>
+<body>
+<main>
+<section class="hero">
+<span class="tag">A proposal, not a loophole</span>
+<h1>Administrator access for my Mac</h1>
+<p class="subtitle">I bought this Mac myself and I want to use it seriously for software development. I’m asking for administrator access so I can manage my development environment without needing someone else to authorize routine installations.</p>
+<div class="callout success"><strong>My position is not “admin means I can’t get around rules.”</strong> I understand that administrator access gives me additional power. I’m asking to be trusted with that responsibility while agreeing not to use it to circumvent our family rules.</div>
+</section>
+
+<section class="card">
+<h2>The problem I have right now</h2>
+<p>With a standard account, I can use the Mac normally, but some software installations and system-level changes require an administrator name and password. That means legitimate development setup can stop until someone else is available to authorize it.</p>
+<p>This is not theoretical: when an installer or developer tool requests administrator authorization, I cannot simply complete the installation myself as a standard user.</p>
+<div class="callout"><strong>Important distinction:</strong> downloading a <code>.dmg</code> file itself does not always require admin access. The issue is that software installed from it may need administrator authorization depending on what it installs or changes.</div>
+<p class="sources">Apple documentation: <a href="https://support.apple.com/en-ie/guide/mac-help/mhosxlogo1438/mac">If you’re asked for an administrator name and password on Mac</a></p>
+</section>
+
+<section class="card">
+<h2>Why development makes this more important</h2>
+<div class="grid">
+<div class="mini"><h3>Developer tools</h3><p>Development environments can install compilers, command-line tools, SDK components, debuggers, runtimes, device tooling, or other components that may require authorization.</p></div>
+<div class="mini"><h3>System-level setup</h3><p>Some tools need to place components outside my home folder or modify system configuration. A standard account can turn otherwise legitimate setup into a request for someone else’s password.</p></div>
+<div class="mini"><h3>Testing</h3><p>I want to be able to build and test software on the computer I own, including tools that may need elevated permissions for their normal installation or configuration.</p></div>
+<div class="mini"><h3>Learning independence</h3><p>Part of learning software development is learning how to responsibly manage a development machine. Administrator access comes with responsibility, not just convenience.</p></div>
+</div>
+<p class="sources">Apple documents the distinction between standard and administrator accounts: <a href="https://support.apple.com/en-ae/guide/mac-help/mchl3e281fc9/mac">Add a user or group on Mac</a></p>
+</section>
+
+<section class="card">
+<h2>I’m not going to make claims that aren’t true</h2>
+<p>There are real reasons for concern. Apple says administrator accounts can install apps and change settings, and Apple recommends standard accounts for children because administrator changes can affect the Mac and other accounts.</p>
+<ul>
+<li>I am <strong>not</strong> claiming administrator access is incapable of being misused.</li>
+<li>I am <strong>not</strong> claiming Screen Time is technically impossible to interfere with from an administrator account.</li>
+<li>I am <strong>not</strong> asking you to ignore the additional responsibility that comes with admin access.</li>
+</ul>
+<p class="quote">I’m asking for a trust-and-accountability solution instead of preventing legitimate development work because the same privilege could theoretically be misused.</p>
+<p class="sources">Apple: <a href="https://support.apple.com/en-us/102142">Help your child set up a Mac</a></p>
+</section>
+
+<section class="card">
+<h2>My commitments</h2>
+<ul class="check">
+<li>I will not create additional user accounts to get around our rules.</li>
+<li>I will not deliberately use administrator privileges to circumvent agreed Screen Time limits.</li>
+<li>I will not change Family Sharing or parental-control settings to defeat the rules.</li>
+<li>I will not use admin access as an excuse to ignore rules we have explicitly agreed on.</li>
+<li>I will keep the Screen Time passcode private from myself and will not ask for it just because I have admin access.</li>
+<li>If I break this agreement, I accept that we can revisit or remove administrator access.</li>
+</ul>
+</section>
+
+<section class="card">
+<h2>A fair compromise</h2>
+<p><span class="num">1</span><strong>Give me administrator access.</strong> This lets the Mac function as a development computer I can actually manage.</p>
+<p><span class="num">2</span><strong>Keep the family rules.</strong> Screen Time limits and household rules still apply; admin access is not permission to ignore them.</p>
+<p><span class="num">3</span><strong>No extra accounts.</strong> I have already agreed not to create additional profiles for the purpose of getting around rules.</p>
+<p><span class="num">4</span><strong>Accountability.</strong> If I misuse the privilege, we can go back to a standard account and reconsider.</p>
+<p><span class="num">5</span><strong>Specific concerns get specific solutions.</strong> If there is a particular app or setting you are worried about, we can discuss that instead of blocking administrator access altogether.</p>
+</section>
+
+<section class="card">
+<h2>Why this is reasonable</h2>
+<div class="grid">
+<div class="mini"><h3>For my parents</h3><p>You are not being asked to pretend there is zero risk. You are being asked to trust me with a clearly defined responsibility and a clear consequence if I abuse it.</p></div>
+<div class="mini"><h3>For me</h3><p>I can install and configure legitimate development software on the computer I purchased without having to stop and wait for another person every time administrator authorization is required.</p></div>
+</div>
+<div class="callout"><strong>The test:</strong> If I follow the agreement, administrator access stays. If I deliberately use it to violate the agreement, we revisit it. That gives both sides a meaningful incentive to make the arrangement work.</div>
+</section>
+
+<section class="card">
+<h2>My actual request</h2>
+<p class="quote">“Can we try administrator access on my Mac under these rules? I’m not asking you to believe that admin access is powerless. I’m asking you to trust me with a responsibility because I’m using this computer for real development, and I’m willing to accept consequences if I misuse it.”</p>
+</section>
+
+<section class="card">
+<h2>Technical evidence</h2>
+<ul>
+<li>Apple explains that some Mac tasks prompt for an administrator name and password.</li>
+<li>Apple distinguishes standard users from administrators because administrators have broader system-management capabilities.</li>
+<li>GitHub Pages can publish a static site directly from a repository branch, making this proposal independently viewable as a real web page.</li>
+</ul>
+<p class="sources">Apple administrator prompt: <a href="https://support.apple.com/en-ie/guide/mac-help/mhosxlogo1438/mac">support.apple.com</a><br>Apple user accounts: <a href="https://support.apple.com/en-ae/guide/mac-help/mchl3e281fc9/mac">support.apple.com</a><br>Apple guidance for child Mac accounts: <a href="https://support.apple.com/en-us/102142">support.apple.com</a><br>GitHub Pages publishing: <a href="https://docs.github.com/en/pages/getting-started-with-github-pages/configuring-a-publishing-source-for-your-github-pages-site">docs.github.com</a></p>
+</section>
+
+<p class="footer">Prepared as a transparent proposal. It intentionally does not provide instructions for bypassing parental controls or other restrictions.</p>
+</main>
+</body>
+</html>
