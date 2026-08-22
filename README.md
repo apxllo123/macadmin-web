@@ -16,15 +16,13 @@ The site intentionally does **not** provide instructions for bypassing Screen Ti
 
 ## Current site
 
-The site includes:
-
-- Responsive, section-based proposal layout
-- Sticky navigation for quick movement between sections
-- Separate sections for the problem, development needs, trust, commitments, compromise, fairness, evidence, and final request
-- Direct links to primary Apple Support documentation and GitHub Pages documentation
+- Responsive section-based proposal layout
+- Sticky navigation
+- Distinct sections for the problem, development, trust, commitments, agreement, fairness, evidence, and final request
+- Direct Apple Support and GitHub Pages source links
 - Mobile-friendly cards and typography
-- Clear distinction between factual technical claims and personal commitments
-- GitHub Pages-compatible static HTML/CSS
+- Clear separation between factual claims and personal commitments
+- Static HTML/CSS suitable for GitHub Pages
 
 ## Commit workflow
 
@@ -41,7 +39,7 @@ docs: update source references
 chore: clean up page metadata
 ```
 
-Keep each commit focused and easy to understand. Do not mix unrelated UI redesigns, documentation, deployment changes, and experiments in one commit unless they are genuinely one logical change.
+Keep commits focused and easy to understand. Do not mix unrelated UI redesigns, documentation, deployment changes, and experiments in one commit unless they are genuinely one logical change.
 
 ## Verification before committing
 
