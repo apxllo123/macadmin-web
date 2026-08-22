@@ -10,7 +10,7 @@ This project is a presentation site, not a bypass guide. It explains:
 
 - practical limitations of a standard macOS account for development;
 - concrete Apple-documented development operations that can require elevated
-  authorization;
+authorization;
 - the real security and parental-control concerns around administrator access;
 - the commitments and accountability proposed in response to those concerns;
 - primary-source Apple documentation supporting the technical claims.
@@ -30,7 +30,7 @@ Time, Family Sharing, parental controls, or other restrictions.
 - Responsive cards and typography
 - Static HTML/CSS suitable for GitHub Pages
 - Automated GitHub Actions checks for HTML, documentation, links, local assets,
-  browser rendering, images, and oversized files
+browser rendering, images, and oversized files
 
 ## Evidence standards
 
@@ -53,22 +53,14 @@ access is incapable of affecting parental controls.
 
 ## Primary sources
 
-- Apple Support — administrator authorization on Mac
-  - https://support.apple.com/en-hk/guide/mac-help/mhosxlogo1438/mac
-- Apple Support — Users & Groups and account permissions
-  - https://support.apple.com/en-ca/guide/mac-help/mtusr001/mac
-- Apple Support — standard versus administrator accounts
-  - https://support.apple.com/en-euro/guide/mac-help/mchl3e281fc9/mac
-- Apple Support — help your child set up a Mac
-  - https://support.apple.com/en-us/102142
-- Apple Developer — installing Command Line Tools
-  - https://developer.apple.com/documentation/xcode/installing-the-command-line-tools/
-- Apple Developer — configuring Command Line Tools settings
-  - https://developer.apple.com/documentation/xcode/configuring-command-line-tools-settings
-- Apple Developer — Xcode command-line tool reference
-  - https://developer.apple.com/documentation/xcode/xcode-command-line-tool-reference
-- GitHub Docs — configuring a GitHub Pages publishing source
-  - https://docs.github.com/en/pages/getting-started-with-github-pages/configuring-a-publishing-source-for-your-github-pages-site
+- [Apple Support: administrator authorization](https://support.apple.com/en-hk/guide/mac-help/mhosxlogo1438/mac)
+- [Apple Support: Users & Groups](https://support.apple.com/en-ca/guide/mac-help/mtusr001/mac)
+- [Apple Support: account permissions](https://support.apple.com/en-euro/guide/mac-help/mchl3e281fc9/mac)
+- [Apple Support: help your child set up a Mac](https://support.apple.com/en-us/102142)
+- [Apple Developer: installing Command Line Tools](https://developer.apple.com/documentation/xcode/installing-the-command-line-tools/)
+- [Apple Developer: configuring Command Line Tools](https://developer.apple.com/documentation/xcode/configuring-command-line-tools-settings)
+- [Apple Developer: Xcode command-line tools](https://developer.apple.com/documentation/xcode/xcode-command-line-tool-reference)
+- [GitHub Docs: GitHub Pages publishing](https://docs.github.com/en/pages/getting-started-with-github-pages/configuring-a-publishing-source-for-your-github-pages-site)
 
 ## Visual resources
 
@@ -78,16 +70,13 @@ copied Apple screenshots and are labeled as such on the page.
 ```text
 resources/
 ├── developer-admin-mockup.svg
-├── developer-admin-prompt-mockup.png
 ├── screen-time-mockup.svg
-├── screen-time-mockup.png
-├── users-groups-mockup.svg
-└── users-groups-mockup.png
+└── users-groups-mockup.svg
 ```
 
 The SVG versions are the production visuals used by the site because they stay
-sharp at any resolution. PNG versions are also kept as conventional image
-resources for easy reuse in documents or presentations.
+sharp at any resolution. They can also be exported to PNG when a document or
+presentation needs a raster image.
 
 ## Development workflow
 
@@ -126,7 +115,7 @@ The workflow runs on pushes and pull requests for `main` and `dev` and checks:
 5. README and HTML external links with Lychee.
 6. A real Chromium render of the page.
 7. Broken image detection, browser console errors, page errors, and failed
-   external requests during rendering.
+external requests during rendering.
 8. Oversized files that could accidentally bloat a static site.
 
 Before moving a change from `dev` to `main`, review the visual result at desktop
