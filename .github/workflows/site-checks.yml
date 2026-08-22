@@ -81,9 +81,8 @@ jobs:
                   if parsed.scheme in {'http', 'https', 'mailto', 'tel', 'data', 'javascript'} or href.startswith('#'):
                       continue
                   target = (path.parent / href.split('#', 1)[0].split('?', 1)[0]).resolve()
-                  if target.suffix or target.name:
-                      if not target.exists():
-                          errors.append(f'{path}: broken local link: {href}')
+                  if target.name and not target.exists():
+                      errors.append(f'{path}: broken local link: {href}')
 
           readme = ROOT / 'README.md'
           if not readme.exists():
@@ -98,11 +97,70 @@ jobs:
       - name: Validate HTML
         run: npx --yes html-validate@9 index.html
 
+      - name: Lint documentation
+        run: npx --yes markdownlint-cli2@0.17 README.md
+
       - name: Check documentation and external links
         uses: lycheeverse/lychee-action@v2
         with:
           args: --verbose --no-progress 'README.md' 'index.html'
           fail: true
+
+      - name: Install Playwright test runner
+        run: |
+          npm install --prefix /tmp/macadmin-playwright --no-save @playwright/test@1.55.0
+          cd /tmp/macadmin-playwright
+          npx playwright install --with-deps chromium
+
+      - name: Render site in Chromium and verify images
+        shell: bash
+        run: |
+          python -m http.server 8000 >/tmp/macadmin-http.log 2>&1 &
+          SERVER_PID=$!
+          trap 'kill $SERVER_PID' EXIT
+
+          cat >/tmp/site-check.js <<'EOF'
+          const { chromium } = require('/tmp/macadmin-playwright/node_modules/playwright');
+
+          (async () => {
+            const browser = await chromium.launch({ headless: true });
+            const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
+            const consoleErrors = [];
+            const pageErrors = [];
+            const failedRequests = [];
+
+            page.on('console', message => {
+              if (message.type() === 'error') consoleErrors.push(message.text());
+            });
+            page.on('pageerror', error => pageErrors.push(String(error)));
+            page.on('requestfailed', request => {
+              const url = request.url();
+              if (!url.startsWith('http://127.0.0.1:8000')) failedRequests.push(`${url} :: ${request.failure()?.errorText || 'failed'}`);
+            });
+
+            const response = await page.goto('http://127.0.0.1:8000/index.html', { waitUntil: 'networkidle' });
+            if (!response || !response.ok()) throw new Error(`Page failed to load: ${response?.status()}`);
+
+            const brokenImages = await page.locator('img').evaluateAll(images =>
+              images.filter(img => !img.complete || img.naturalWidth === 0).map(img => img.src)
+            );
+
+            await page.screenshot({ path: '/tmp/macadmin-site.png', fullPage: true });
+
+            if (brokenImages.length) throw new Error(`Broken images: ${brokenImages.join(', ')}`);
+            if (consoleErrors.length) throw new Error(`Browser console errors: ${consoleErrors.join(' | ')}`);
+            if (pageErrors.length) throw new Error(`Page errors: ${pageErrors.join(' | ')}`);
+            if (failedRequests.length) throw new Error(`Failed requests: ${failedRequests.join(' | ')}`);
+
+            console.log('Chromium render check passed. Screenshot written to /tmp/macadmin-site.png');
+            await browser.close();
+          })().catch(error => {
+            console.error(error);
+            process.exit(1);
+          });
+          EOF
+
+          node /tmp/site-check.js
 
       - name: Check for accidental large files
         shell: python
