@@ -81,9 +81,8 @@ jobs:
                   if parsed.scheme in {'http', 'https', 'mailto', 'tel', 'data', 'javascript'} or href.startswith('#'):
                       continue
                   target = (path.parent / href.split('#', 1)[0].split('?', 1)[0]).resolve()
-                  if target.suffix or target.name:
-                      if not target.exists():
-                          errors.append(f'{path}: broken local link: {href}')
+                  if target.name and not target.exists():
+                      errors.append(f'{path}: broken local link: {href}')
 
           readme = ROOT / 'README.md'
           if not readme.exists():
@@ -107,8 +106,11 @@ jobs:
           args: --verbose --no-progress 'README.md' 'index.html'
           fail: true
 
-      - name: Install Playwright
-        run: npx --yes playwright@1.55.0 install --with-deps chromium
+      - name: Install Playwright test runner
+        run: |
+          npm install --prefix /tmp/macadmin-playwright --no-save @playwright/test@1.55.0
+          cd /tmp/macadmin-playwright
+          npx playwright install --with-deps chromium
 
       - name: Render site in Chromium and verify images
         shell: bash
@@ -117,29 +119,48 @@ jobs:
           SERVER_PID=$!
           trap 'kill $SERVER_PID' EXIT
 
-          cat >/tmp/site-check.spec.js <<'EOF'
-          const { test, expect } = require('@playwright/test');
+          cat >/tmp/site-check.js <<'EOF'
+          const { chromium } = require('/tmp/macadmin-playwright/node_modules/playwright');
 
-          test('site renders without broken images', async ({ page }) => {
+          (async () => {
+            const browser = await chromium.launch({ headless: true });
+            const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
             const consoleErrors = [];
-            page.on('console', msg => {
-              if (msg.type() === 'error') consoleErrors.push(msg.text());
+            const pageErrors = [];
+            const failedRequests = [];
+
+            page.on('console', message => {
+              if (message.type() === 'error') consoleErrors.push(message.text());
+            });
+            page.on('pageerror', error => pageErrors.push(String(error)));
+            page.on('requestfailed', request => {
+              const url = request.url();
+              if (!url.startsWith('http://127.0.0.1:8000')) failedRequests.push(`${url} :: ${request.failure()?.errorText || 'failed'}`);
             });
 
             const response = await page.goto('http://127.0.0.1:8000/index.html', { waitUntil: 'networkidle' });
-            expect(response && response.ok()).toBeTruthy();
+            if (!response || !response.ok()) throw new Error(`Page failed to load: ${response?.status()}`);
 
             const brokenImages = await page.locator('img').evaluateAll(images =>
               images.filter(img => !img.complete || img.naturalWidth === 0).map(img => img.src)
             );
-            expect(brokenImages).toEqual([]);
-            expect(consoleErrors).toEqual([]);
 
             await page.screenshot({ path: '/tmp/macadmin-site.png', fullPage: true });
+
+            if (brokenImages.length) throw new Error(`Broken images: ${brokenImages.join(', ')}`);
+            if (consoleErrors.length) throw new Error(`Browser console errors: ${consoleErrors.join(' | ')}`);
+            if (pageErrors.length) throw new Error(`Page errors: ${pageErrors.join(' | ')}`);
+            if (failedRequests.length) throw new Error(`Failed requests: ${failedRequests.join(' | ')}`);
+
+            console.log('Chromium render check passed. Screenshot written to /tmp/macadmin-site.png');
+            await browser.close();
+          })().catch(error => {
+            console.error(error);
+            process.exit(1);
           });
           EOF
 
-          npx --yes playwright@1.55.0 test /tmp/site-check.spec.js --config=/tmp/playwright.config.js 2>/dev/null || true
+          node /tmp/site-check.js
 
       - name: Check for accidental large files
         shell: python
