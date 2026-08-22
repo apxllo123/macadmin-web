@@ -23,12 +23,15 @@ The site intentionally does **not** provide instructions for bypassing Screen Ti
 - Mobile-friendly cards and typography
 - Clear separation between factual claims and personal commitments
 - Static HTML/CSS suitable for GitHub Pages
+- Automated GitHub Actions checks for HTML, documentation, links, local assets, and oversized files
 
-## Commit workflow
+## Development workflow
 
-`main` is the only working and publishing branch for this repository.
+`main` is the production and GitHub Pages branch.
 
-Do **not** create feature, fix, docs, or chore branches for this project. The conventional prefixes describe the **commit message**, not the branch name.
+`dev` is the single development branch. Experimental work should be made on `dev` first and reviewed before it is moved to `main`.
+
+Do **not** create additional feature, fix, docs, or chore branches for this project. The conventional prefixes describe the **commit message**, not the branch name.
 
 Examples:
 
@@ -41,17 +44,19 @@ chore: clean up page metadata
 
 Keep commits focused and easy to understand. Do not mix unrelated UI redesigns, documentation, deployment changes, and experiments in one commit unless they are genuinely one logical change.
 
-## Verification before committing
+## Verification
 
-Before pushing a website change to `main`:
+The repository includes `.github/workflows/site-checks.yml`.
 
-1. Inspect the exact intended changes.
-2. Confirm only the intended files changed.
-3. Check the page at desktop and mobile widths.
-4. Confirm external source links are correct.
-5. Confirm the site remains compatible with static GitHub Pages hosting.
-6. Check the GitHub Pages deployment status when applicable.
-7. Make sure unrelated sections were not accidentally changed.
+The workflow runs on pushes and pull requests for `main` and `dev` and checks:
+
+1. HTML structure and required document elements.
+2. Local image references and local links.
+3. HTML validity with `html-validate`.
+4. README and HTML external links with Lychee.
+5. Oversized files that could accidentally bloat a static site.
+
+Before moving a change from `dev` to `main`, also review the visual result at desktop and mobile widths and confirm the GitHub Pages deployment is healthy.
 
 ## Design principles
 
@@ -72,6 +77,9 @@ Instead, the proposal acknowledges that administrators have broader permissions 
 
 ```text
 macadmin-web/
+├── .github/
+│   └── workflows/
+│       └── site-checks.yml
 ├── index.html
 └── README.md
 ```
@@ -92,3 +100,5 @@ Source URLs are kept directly in the site so readers can verify claims independe
 ## Publishing
 
 The production branch is `main` and is intended for GitHub Pages.
+
+Changes should be developed on `dev`, checked by GitHub Actions, reviewed, and then moved to `main` only after approval.
