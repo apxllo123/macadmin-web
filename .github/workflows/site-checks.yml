@@ -1,0 +1,121 @@
+name: Site Checks
+
+on:
+  push:
+    branches:
+      - main
+      - dev
+  pull_request:
+    branches:
+      - main
+      - dev
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: Validate site
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: Validate repository structure and local assets
+        shell: python
+        run: |
+          from pathlib import Path
+          from html.parser import HTMLParser
+          from urllib.parse import urlparse
+          import sys
+
+          ROOT = Path('.').resolve()
+          html_files = sorted(ROOT.glob('*.html'))
+          if not html_files:
+              raise SystemExit('No HTML files found.')
+
+          errors = []
+
+          class Parser(HTMLParser):
+              def __init__(self):
+                  super().__init__()
+                  self.html_count = 0
+                  self.head_count = 0
+                  self.body_count = 0
+                  self.title_count = 0
+                  self.image_sources = []
+                  self.hrefs = []
+              def handle_starttag(self, tag, attrs):
+                  attrs = dict(attrs)
+                  if tag == 'html': self.html_count += 1
+                  elif tag == 'head': self.head_count += 1
+                  elif tag == 'body': self.body_count += 1
+                  elif tag == 'title': self.title_count += 1
+                  elif tag == 'img' and attrs.get('src'): self.image_sources.append(attrs['src'])
+                  elif tag == 'link' and attrs.get('href'): self.hrefs.append(attrs['href'])
+                  elif tag == 'a' and attrs.get('href'): self.hrefs.append(attrs['href'])
+
+          for path in html_files:
+              parser = Parser()
+              parser.feed(path.read_text(encoding='utf-8'))
+              if parser.html_count != 1: errors.append(f'{path}: expected exactly one <html> element')
+              if parser.head_count != 1: errors.append(f'{path}: expected exactly one <head> element')
+              if parser.body_count != 1: errors.append(f'{path}: expected exactly one <body> element')
+              if parser.title_count != 1: errors.append(f'{path}: expected exactly one <title> element')
+
+              for src in parser.image_sources:
+                  if urlparse(src).scheme in {'http', 'https', 'data'}:
+                      continue
+                  target = (path.parent / src.split('#', 1)[0].split('?', 1)[0]).resolve()
+                  if not target.exists() or not target.is_file():
+                      errors.append(f'{path}: missing local image: {src}')
+
+              for href in parser.hrefs:
+                  parsed = urlparse(href)
+                  if parsed.scheme in {'http', 'https', 'mailto', 'tel', 'data', 'javascript'} or href.startswith('#'):
+                      continue
+                  target = (path.parent / href.split('#', 1)[0].split('?', 1)[0]).resolve()
+                  if target.suffix or target.name:
+                      if not target.exists():
+                          errors.append(f'{path}: broken local link: {href}')
+
+          readme = ROOT / 'README.md'
+          if not readme.exists():
+              errors.append('README.md is missing')
+
+          if errors:
+              print('\n'.join(errors))
+              sys.exit(1)
+
+          print(f'Validated {len(html_files)} HTML file(s), README.md, local image references, and local links.')
+
+      - name: Validate HTML
+        run: npx --yes html-validate@9 index.html
+
+      - name: Check documentation and external links
+        uses: lycheeverse/lychee-action@v2
+        with:
+          args: --verbose --no-progress 'README.md' 'index.html'
+          fail: true
+
+      - name: Check for accidental large files
+        shell: python
+        run: |
+          from pathlib import Path
+          import sys
+
+          limit = 10 * 1024 * 1024
+          bad = []
+          for p in Path('.').rglob('*'):
+              if p.is_file() and '.git' not in p.parts and p.stat().st_size > limit:
+                  bad.append(f'{p}: {p.stat().st_size} bytes')
+          if bad:
+              print('\n'.join(bad))
+              sys.exit(1)
+          print('No file exceeds 10 MiB.')
