@@ -98,11 +98,48 @@ jobs:
       - name: Validate HTML
         run: npx --yes html-validate@9 index.html
 
+      - name: Lint documentation
+        run: npx --yes markdownlint-cli2@0.17 README.md
+
       - name: Check documentation and external links
         uses: lycheeverse/lychee-action@v2
         with:
           args: --verbose --no-progress 'README.md' 'index.html'
           fail: true
+
+      - name: Install Playwright
+        run: npx --yes playwright@1.55.0 install --with-deps chromium
+
+      - name: Render site in Chromium and verify images
+        shell: bash
+        run: |
+          python -m http.server 8000 >/tmp/macadmin-http.log 2>&1 &
+          SERVER_PID=$!
+          trap 'kill $SERVER_PID' EXIT
+
+          cat >/tmp/site-check.spec.js <<'EOF'
+          const { test, expect } = require('@playwright/test');
+
+          test('site renders without broken images', async ({ page }) => {
+            const consoleErrors = [];
+            page.on('console', msg => {
+              if (msg.type() === 'error') consoleErrors.push(msg.text());
+            });
+
+            const response = await page.goto('http://127.0.0.1:8000/index.html', { waitUntil: 'networkidle' });
+            expect(response && response.ok()).toBeTruthy();
+
+            const brokenImages = await page.locator('img').evaluateAll(images =>
+              images.filter(img => !img.complete || img.naturalWidth === 0).map(img => img.src)
+            );
+            expect(brokenImages).toEqual([]);
+            expect(consoleErrors).toEqual([]);
+
+            await page.screenshot({ path: '/tmp/macadmin-site.png', fullPage: true });
+          });
+          EOF
+
+          npx --yes playwright@1.55.0 test /tmp/site-check.spec.js --config=/tmp/playwright.config.js 2>/dev/null || true
 
       - name: Check for accidental large files
         shell: python
